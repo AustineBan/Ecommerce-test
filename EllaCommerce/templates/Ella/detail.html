@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <img src="{{product.profile.url}}" width="100%" alt="">
+    <h2>{{product.name}}</h2>
+    <hr>
+    <p>
+        Price: {{product.price}}
+    </p>
+    <hr>
+    <p>
+        {{product.summary}}
+    </p>
+    <hr>
+    <p>
+        {{product.des}}
+    </p>
+</div>
+{% endblock content %}

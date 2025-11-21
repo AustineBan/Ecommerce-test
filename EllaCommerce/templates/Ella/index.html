@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock title %}
+
+{% block content %}
+<div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Categories
+  </button>
+  <ul class="dropdown-menu">
+    {% for category in categories %}
+        <li><a class="dropdown-item" href="{% url 'product:cate' category.slug %}">{{category.name}}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% if category %}
+<h3>{{category.name}} Products</h3>
+{% else %}
+<h3>All Products</h3>
+{% endif %}
+
+<div class="row justify-content-center">
+    {% for product in products %}
+    <div class="col-12 col-md-6 col-xl-3 mb-3 d-flex justify-content-center">
+        <div class="card" style="width: 18rem;">
+            <img src="{{product.profile.url}}" class="card-img-top" alt="product.name">
+            <div class="card-body">
+                <h5 class="card-title">{{product.name}}</h5>
+                <p class="card-text">{{product.summary}}</p>
+                <p class="text-info">${{product.price}}</p>
+                <a href="{% url 'product:detail' product.id %}" class="btn btn-primary">View</a>
+                <form action="{% url 'cart:add_to_cart' product.id %}" method="POST" class="add-to-cart">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-primary">Add to Cart</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+  const forms = document.querySelectorAll(".add-to-cart");
+
+  forms.forEach(form => {
+    form.addEventListener("submit", (e)=>{
+      e.preventDefault()
+      
+      let url = form.action
+      let formData = new FormData(form)
+      console.log(url)
+      console.log(formData)
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": formData.get("csrfmiddlewaretoken")
+        },
+        body: formData
+      })
+      .then(resp => resp.json())
+      .then(data => {
+        console.log(data.success)
+        if(data.success){
+          alert(`Add ${data.product} to cart successful`)
+        }
+      })
+      .catch(error => console.log(error))
+    })
+  })
+</script>
+{% endblock content %}
